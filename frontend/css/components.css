@@ -165,3 +165,37 @@
 }
 .param-unit { font-size: 11px; color: var(--text-muted); margin-left: 2px; }
 .param-desc { font-size: 11px; color: var(--text-muted); }
+
+/* Controls */
+.controls-card { }
+.controls-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 768px) { .controls-grid { grid-template-columns: 1fr; } }
+.control-item label {
+  font-size: 13px; font-weight: 600;
+  display: block; margin-bottom: 4px;
+}
+.control-input-row {
+  display: flex; align-items: center; gap: 10px;
+}
+.control-input-row input[type="range"] {
+  flex: 1; accent-color: var(--accent);
+  height: 6px; cursor: pointer;
+}
+.control-value {
+  font-family: var(--mono); font-size: 14px;
+  font-weight: 600; color: var(--accent);
+  min-width: 60px; text-align: right;
+}
+.control-desc {
+  font-size: 11px; color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Funnel desc */
+.funnel-desc {
+  display: block; font-size: 11px;
+  color: var(--text-muted);
+}
