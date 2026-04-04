@@ -1,0 +1,21 @@
+[
+  {"fund_name": "Baupost Group",       "manager": "Seth Klarman",    "known_for": "deep value"},
+  {"fund_name": "Greenlight Capital",  "manager": "David Einhorn",   "known_for": "deep value, short selling"},
+  {"fund_name": "Fairfax Financial",   "manager": "Prem Watsa",      "known_for": "deep value, insurance"},
+  {"fund_name": "Pershing Square",     "manager": "Bill Ackman",     "known_for": "activist"},
+  {"fund_name": "Third Point",         "manager": "Dan Loeb",        "known_for": "activist"},
+  {"fund_name": "ValueAct Capital",    "manager": "Jeff Ubben",      "known_for": "activist"},
+  {"fund_name": "Starboard Value",     "manager": "Jeff Smith",      "known_for": "activist"},
+  {"fund_name": "Gotham Asset Mgmt",   "manager": "Joel Greenblatt", "known_for": "deep value, quant"},
+  {"fund_name": "Pabrai Funds",        "manager": "Mohnish Pabrai",  "known_for": "deep value, Buffett style"},
+  {"fund_name": "Oaktree Capital",     "manager": "Howard Marks",    "known_for": "distressed, value"},
+  {"fund_name": "Tweedy Browne",       "manager": "Various",         "known_for": "deep value, Graham style"},
+  {"fund_name": "Sequoia Fund",        "manager": "Various",         "known_for": "concentrated value"},
+  {"fund_name": "Leucadia National",   "manager": "Various",         "known_for": "deep value"},
+  {"fund_name": "Icahn Enterprises",   "manager": "Carl Icahn",      "known_for": "activist"},
+  {"fund_name": "Elliott Management",  "manager": "Paul Singer",     "known_for": "activist"},
+  {"fund_name": "Maverick Capital",    "manager": "Lee Ainslie",     "known_for": "value, tiger cub"},
+  {"fund_name": "Permit Capital",      "manager": "Various",         "known_for": "deep value"},
+  {"fund_name": "Hesta",               "manager": "Various",         "known_for": "institutional value"},
+  {"fund_name": "Mast Asset Mgmt",     "manager": "Various",         "known_for": "deep value, Korea"}
+]

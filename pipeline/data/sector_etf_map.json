@@ -1,0 +1,19 @@
+{
+  "Energy": "XLE",
+  "Materials": "XLB",
+  "Industrials": "XLI",
+  "Consumer Discretionary": "XLY",
+  "Consumer Staples": "XLP",
+  "Health Care": "XLV",
+  "Financials": "XLF",
+  "Information Technology": "XLK",
+  "Communication Services": "XLC",
+  "Utilities": "XLU",
+  "Real Estate": "XLRE",
+  "Natural Gas": "FCG",
+  "Retail": "XRT",
+  "Gold": "GLD",
+  "Silver": "SLV",
+  "Oil": "USO",
+  "Steel": "SLX"
+}

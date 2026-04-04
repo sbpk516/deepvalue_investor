@@ -1,0 +1,12 @@
+venv/
+venv313/
+__pycache__/
+*.pyc
+.env
+rk_screener.db
+cache/
+logs/
+output/
+*.egg-info/
+.DS_Store
+.pytest_cache/

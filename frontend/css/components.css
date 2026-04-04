@@ -1,0 +1,92 @@
+.score-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 0;
+}
+.score-bar__fill {
+  height: 8px; border-radius: 4px;
+  transition: width 0.3s ease;
+}
+.score-bar__label {
+  font-size: 14px; font-weight: 600;
+  font-family: var(--mono);
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: background 0.15s;
+}
+.card:hover { background: var(--bg-hover); }
+
+.tier-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.tier-badge--exceptional { background: var(--exceptional); color: #000; }
+.tier-badge--high_conviction { background: var(--high-conviction); color: #000; }
+.tier-badge--speculative { background: var(--speculative); color: #000; }
+.tier-badge--watch { background: var(--watch); color: #000; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn:hover { background: var(--bg-hover); border-color: var(--accent); }
+.btn--primary { background: var(--accent); color: #000; border-color: var(--accent); }
+
+.risk-flag {
+  padding: 8px 12px;
+  border-left: 3px solid;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+.risk-flag--danger { border-color: var(--red); background: rgba(248,81,73,0.1); }
+.risk-flag--warning { border-color: var(--yellow); background: rgba(210,153,34,0.1); }
+.risk-flag--info { border-color: var(--accent); background: rgba(88,166,255,0.1); }
+.risk-flag--note { border-color: var(--text-muted); background: rgba(139,148,158,0.1); }
+
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.modal-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  max-width: 600px; width: 90%;
+  max-height: 80vh; overflow-y: auto;
+}
+.modal-close {
+  float: right; background: none; border: none;
+  color: var(--text-muted); font-size: 24px; cursor: pointer;
+}
+
+.tooltip {
+  position: absolute;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-size: 13px;
+  max-width: 300px;
+  box-shadow: var(--shadow);
+  z-index: 999;
+  pointer-events: none;
+}

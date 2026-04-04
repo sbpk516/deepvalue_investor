@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RK Screener — Deep Value Stock Scanner</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/accessibility.css">
+</head>
+<body>
+  <nav class="app-nav" role="navigation" aria-label="Main navigation">
+    <a href="#scanner"   class="nav-tab active" id="nav-scanner">
+      <span class="nav-primary">Today's picks</span>
+      <span class="nav-sub">RK deep value scanner</span>
+    </a>
+    <a href="#watchlist" class="nav-tab" id="nav-watchlist">
+      <span class="nav-primary">My watchlist</span>
+      <span class="nav-sub">Stocks you're tracking</span>
+    </a>
+    <a href="#deepdive"  class="nav-tab" id="nav-deepdive">
+      <span class="nav-primary">Analyse a stock</span>
+      <span class="nav-sub">Enter any ticker</span>
+    </a>
+    <a href="#swing"     class="nav-tab nav-tab--swing" id="nav-swing">
+      <span class="nav-primary">Swing trades</span>
+      <span class="nav-sub">Short-term momentum</span>
+    </a>
+  </nav>
+
+  <main class="app-main">
+    <div id="scanner"   class="page page-scanner"></div>
+    <div id="watchlist" class="page page-watchlist" style="display:none"></div>
+    <div id="deepdive"  class="page page-deepdive"  style="display:none"></div>
+    <div id="swing"     class="page page-swing"     style="display:none"></div>
+  </main>
+
+  <footer class="app-footer">
+    <a href="#" id="how-it-works-link">How this screener works</a>
+    <span class="footer-sep">&middot;</span>
+    <span class="footer-disclaimer">
+      Educational only — not financial advice
+    </span>
+  </footer>
+
+  <div id="how-it-works-modal" class="modal-overlay" style="display:none"
+       role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-content">
+      <button class="modal-close" aria-label="Close">&times;</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="tooltip" class="tooltip" role="tooltip" style="display:none"></div>
+
+  <script src="js/utils/format.js"></script>
+  <script src="js/utils/colors.js"></script>
+  <script src="js/utils/storage.js"></script>
+  <script src="js/components/scorecard.js"></script>
+  <script src="js/pages/scanner.js"></script>
+  <script src="js/pages/watchlist.js"></script>
+  <script src="js/pages/deepdive.js"></script>
+  <script src="js/pages/swing.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

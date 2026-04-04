@@ -1,0 +1,24 @@
+# Data fetching
+yfinance==0.2.38
+pandas==2.2.0
+numpy==1.26.4
+requests==2.31.0
+beautifulsoup4==4.12.3
+lxml==5.1.0
+
+# Scraping
+playwright==1.42.0
+playwright-stealth==1.0.6      # prevents bot detection on FINRA + OpenInsider
+
+# LLM
+google-generativeai==0.5.4
+
+# Utilities
+python-dotenv==1.0.1
+tqdm==4.66.2
+schedule==1.2.1
+
+# Testing
+pytest==8.1.0
+pytest-mock==3.12.0
+responses==0.25.0
