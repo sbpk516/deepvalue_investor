@@ -99,6 +99,15 @@ def run_pipeline(tickers: list[dict] = None, single_ticker: str = None) -> dict:
 
     # ── Write outputs ────────────────────────────────────────
     runtime = int(time.time() - start_time)
+
+    # Strip _price_series from intermediate layers too for JSON output
+    def _clean(stocks):
+        out = []
+        for s in stocks:
+            c = {k: v for k, v in s.items() if k != "_price_series"}
+            out.append(c)
+        return out
+
     results = {
         "generated_at": datetime.now().isoformat(),
         "run_date": run_date,
@@ -111,6 +120,58 @@ def run_pipeline(tickers: list[dict] = None, single_ticker: str = None) -> dict:
             "layer6_passed":   len(final_candidates),
             "scored":          len(scored),
             "runtime_seconds": runtime,
+        },
+        "parameters": {
+            "LAYER2_MIN_DRAWDOWN_PCT": config.LAYER2_MIN_DRAWDOWN_PCT,
+            "LAYER3_MAX_PTBV": config.LAYER3_MAX_PTBV,
+            "LAYER3_MIN_REVENUE": config.LAYER3_MIN_REVENUE,
+            "LAYER3_MAX_OVERHANG_RATIO": config.LAYER3_MAX_OVERHANG_RATIO,
+            "LAYER4_MIN_INSIDER_BUY": config.LAYER4_MIN_INSIDER_BUY,
+            "LAYER5_BOND_SAFE": config.LAYER5_BOND_SAFE,
+            "LAYER5_BOND_CAUTION": config.LAYER5_BOND_CAUTION,
+            "LAYER5_BOND_ELEVATED": config.LAYER5_BOND_ELEVATED,
+            "LAYER5_BOND_HIGH_RISK": config.LAYER5_BOND_HIGH_RISK,
+            "TIER_EXCEPTIONAL": config.TIER_EXCEPTIONAL,
+            "TIER_HIGH_CONVICTION": config.TIER_HIGH_CONVICTION,
+            "TIER_SPECULATIVE": config.TIER_SPECULATIVE,
+            "SCORE_WEIGHTS": config.SCORE_WEIGHTS,
+        },
+        "pipeline": {
+            "layer1_universe": {
+                "description": "SEC EDGAR universe — all US-listed stocks",
+                "count": len(universe),
+                "tickers": [t.get("ticker") for t in universe[:50]],
+            },
+            "layer2_price": {
+                "description": f"Price pain — down {config.LAYER2_MIN_DRAWDOWN_PCT}%+ from 3yr high",
+                "count": len(price_filtered),
+                "filtered": len(universe) - len(price_filtered),
+                "stocks": _clean(price_filtered),
+            },
+            "layer3_fundamentals": {
+                "description": f"Fundamentals — P/TBV < {config.LAYER3_MAX_PTBV}, positive FCF, revenue > ${config.LAYER3_MIN_REVENUE/1e6:.0f}M",
+                "count": len(fund_filtered),
+                "filtered": len(price_filtered) - len(fund_filtered),
+                "stocks": _clean(fund_filtered),
+            },
+            "layer4_conviction": {
+                "description": f"Conviction — insider buy >= ${config.LAYER4_MIN_INSIDER_BUY/1e3:.0f}K OR value fund OR 20%+ insider ownership",
+                "count": len(conviction_filtered),
+                "filtered": len(fund_filtered) - len(conviction_filtered),
+                "stocks": _clean(conviction_filtered),
+            },
+            "layer5_bonds": {
+                "description": "Bond survival — not in credit distress",
+                "count": len(bond_checked),
+                "filtered": len(conviction_filtered) - len(bond_checked),
+                "stocks": _clean(bond_checked),
+            },
+            "layer6_technical": {
+                "description": "Technical — RSI, sector context, decline type",
+                "count": len(final_candidates),
+                "filtered": len(bond_checked) - len(final_candidates),
+                "stocks": _clean(final_candidates),
+            },
         },
         "candidates": scored,
     }

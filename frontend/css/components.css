@@ -90,3 +90,78 @@
   z-index: 999;
   pointer-events: none;
 }
+
+/* Funnel */
+.funnel { display: flex; flex-direction: column; gap: 12px; }
+.funnel-layer { padding: 4px 0; }
+.funnel-bar-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 4px;
+}
+.funnel-label { display: flex; align-items: center; gap: 8px; }
+.funnel-step {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; border-radius: 50%;
+  font-size: 12px; font-weight: 700; color: #000;
+}
+.funnel-name { font-size: 13px; }
+.funnel-count { font-size: 14px; font-family: var(--mono); }
+.funnel-filtered { color: var(--red); font-size: 12px; margin-left: 4px; }
+.funnel-bar-track {
+  height: 6px; background: var(--border); border-radius: 3px;
+  overflow: hidden;
+}
+.funnel-bar-fill {
+  height: 100%; border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.funnel-expand-btn {
+  margin-top: 6px; font-size: 11px; padding: 3px 10px;
+}
+
+/* Layer stock tables */
+.layer-stocks { margin-top: 8px; }
+.layer-table-wrap { overflow-x: auto; }
+.layer-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12px; font-family: var(--mono);
+}
+.layer-table th {
+  text-align: left; padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted); font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.layer-table td {
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.layer-table tr:hover td { background: var(--bg-hover); }
+
+/* Parameters */
+.params-grid { display: flex; flex-direction: column; gap: 16px; }
+.param-group {
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.param-group-title {
+  font-size: 13px; font-weight: 600;
+  margin-bottom: 8px; color: var(--accent);
+}
+.param-row {
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+.param-row:last-child { border-bottom: none; }
+.param-label { font-size: 13px; min-width: 150px; }
+.param-value {
+  font-family: var(--mono); font-size: 14px;
+  font-weight: 600; color: var(--accent);
+  min-width: 80px;
+}
+.param-unit { font-size: 11px; color: var(--text-muted); margin-left: 2px; }
+.param-desc { font-size: 11px; color: var(--text-muted); }
