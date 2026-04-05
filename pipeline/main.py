@@ -23,7 +23,7 @@ from pipeline.utils.logger import get_logger
 # Moving here ensures all modules are importable before the pipeline starts.
 from pipeline.layers.layer1_universe   import run as layer1_run
 from pipeline.layers.layer2_price      import run as layer2_run
-from pipeline.layers.layer3_fundamentals import run as layer3_run
+from pipeline.layers.layer3_fundamentals import run as layer3_run, run_all as layer3_run_all
 from pipeline.layers.layer4_conviction import run as layer4_run
 from pipeline.layers.layer5_bonds      import run as layer5_run
 from pipeline.layers.layer6_technical  import run as layer6_run
@@ -61,8 +61,9 @@ def run_pipeline(tickers: list[dict] = None, single_ticker: str = None) -> dict:
     logger.info(f"Layer 2 complete: {len(price_filtered)} tickers")
 
     # ── Layer 3: Fundamentals ────────────────────────────────
-    fund_filtered = layer3_run(price_filtered, config.__dict__)
-    logger.info(f"Layer 3 complete: {len(fund_filtered)} tickers")
+    fund_filtered, all_evaluated = layer3_run_all(price_filtered, config.__dict__)
+    logger.info(f"Layer 3 complete: {len(fund_filtered)} passed, "
+                f"{len(all_evaluated)} evaluated")
 
     # ── Layer 4: Conviction Signals ──────────────────────────
     conviction_filtered = layer4_run(fund_filtered, config.__dict__)
@@ -151,8 +152,11 @@ def run_pipeline(tickers: list[dict] = None, single_ticker: str = None) -> dict:
             "layer3_fundamentals": {
                 "description": f"Fundamentals — P/TBV < {config.LAYER3_MAX_PTBV}, positive FCF, revenue > ${config.LAYER3_MIN_REVENUE/1e6:.0f}M",
                 "count": len(fund_filtered),
-                "filtered": len(price_filtered) - len(fund_filtered),
+                "filtered": len(all_evaluated) - len(fund_filtered),
+                "evaluated": len(all_evaluated),
+                "no_data": len(price_filtered) - len(all_evaluated),
                 "stocks": _clean(fund_filtered),
+                "all_evaluated": _clean(all_evaluated),
             },
             "layer4_conviction": {
                 "description": f"Conviction — insider buy >= ${config.LAYER4_MIN_INSIDER_BUY/1e3:.0f}K OR value fund OR 20%+ insider ownership",

@@ -26,7 +26,45 @@ def run(tickers: list[dict], cfg: dict, market: str = "US") -> list[dict]:
     logger.info(f"Layer 3: {len(passed)}/{len(tickers)} passed fundamentals")
     return passed
 
+def run_all(tickers: list[dict], cfg: dict, market: str = "US") -> tuple[list[dict], list[dict]]:
+    """Like run(), but returns (passed, all_evaluated) so the frontend can re-filter."""
+    passed = []
+    all_evaluated = []
+    for stock in tickers:
+        try:
+            result = _evaluate_fundamentals(stock)
+            if result:
+                all_evaluated.append(result)
+                if _passes_filters(result):
+                    passed.append(result)
+        except Exception as e:
+            logger.debug(f"Layer 3 failed for {stock['ticker']}: {e}")
+    logger.info(f"Layer 3: {len(passed)}/{len(tickers)} passed, {len(all_evaluated)} evaluated")
+    return passed, all_evaluated
+
 def _evaluate_ticker(stock: dict) -> dict | None:
+    """Original filter — returns stock only if it passes all thresholds."""
+    result = _evaluate_fundamentals(stock)
+    if result and _passes_filters(result):
+        return result
+    return None
+
+
+def _passes_filters(stock: dict) -> bool:
+    """Check if a stock with fundamental data passes the hard filters."""
+    if (stock.get("revenue_ttm") or 0) < config.LAYER3_MIN_REVENUE:
+        return False
+    if (stock.get("fcf_3yr_avg") or 0) <= 0:
+        return False
+    if (stock.get("price_to_tbv") or 999) > config.LAYER3_MAX_PTBV:
+        return False
+    if (stock.get("net_overhang_fcf_ratio") or 999) > config.LAYER3_MAX_OVERHANG_RATIO:
+        return False
+    return True
+
+
+def _evaluate_fundamentals(stock: dict) -> dict | None:
+    """Fetch and compute all fundamental data. Returns enriched stock or None if data unavailable."""
     ticker = stock["ticker"]
     cik = stock.get("cik")
     if not cik:
@@ -38,12 +76,10 @@ def _evaluate_ticker(stock: dict) -> dict | None:
 
     parser = FundamentalsParser(facts, ticker)
 
-    # ── Revenue check ────────────────────────────────────────
+    # ── Revenue ──────────────────────────────────────────────
     revenue = parser.get_latest_annual("Revenues",
                   fallbacks=["RevenueFromContractWithCustomerExcludingAssessedTax",
                              "SalesRevenueNet"])
-    if not revenue or revenue < config.LAYER3_MIN_REVENUE:
-        return None
 
     # ── FCF computation ──────────────────────────────────────
     op_cf_series = parser.get_annual_series("NetCashProvidedByUsedInOperatingActivities")
@@ -60,14 +96,9 @@ def _evaluate_ticker(stock: dict) -> dict | None:
         capex = capex_series.get(year, 0) or 0
         fcf_series[year] = op_cf - abs(capex)
 
-    # 3yr average FCF
     recent_years = sorted(fcf_series.keys())[-3:]
     fcf_values = [fcf_series[y] for y in recent_years]
     fcf_3yr_avg = sum(fcf_values) / len(fcf_values)
-
-    # Hard filter: 3yr avg FCF must be positive
-    if fcf_3yr_avg <= 0:
-        return None
 
     # ── Balance sheet ────────────────────────────────────────
     shares = parser.get_latest("CommonStockSharesOutstanding",
@@ -95,11 +126,6 @@ def _evaluate_ticker(stock: dict) -> dict | None:
     if not total_assets or not total_liab:
         return None
 
-    # Tangible book value
-    # FIX: deferred tax assets are not tangible — must be stripped.
-    # Original plan missed this. For financial companies and post-restructuring
-    # companies, deferred tax assets can be 20-40% of total assets, making
-    # P/TBV appear artificially low and misleadingly cheap.
     deferred_tax = parser.get_latest_annual(
         "DeferredTaxAssetsNet",
         fallbacks=["DeferredIncomeTaxAssetsNet",
@@ -115,12 +141,7 @@ def _evaluate_ticker(stock: dict) -> dict | None:
 
     ptbv = price / tangible_book_per_share if tangible_book_per_share > 0 else 999
 
-    # Hard filter: P/TBV
-    if ptbv > config.LAYER3_MAX_PTBV:
-        return None
-
     # ── Net common overhang ──────────────────────────────────
-    # Check for ASC 842 lease distortion
     op_lease_liab = parser.get_latest_annual(
         "OperatingLeaseLiability",
         fallbacks=["OperatingLeaseLiabilityNoncurrent"]
@@ -132,25 +153,19 @@ def _evaluate_ticker(stock: dict) -> dict | None:
         asc842_flag = lease_pct > config.ASC842_LEASE_FLAG_PCT
 
     net_overhang = lt_liab + st_debt - cash
-    # ASC 842 adjustment: subtract operating lease liabilities
     net_overhang_adjusted = net_overhang - op_lease_liab
 
-    fcf_per_share = fcf_3yr_avg / shares
-    fcf_yield = fcf_per_share / price
+    fcf_per_share = fcf_3yr_avg / shares if shares else 0
+    fcf_yield = fcf_per_share / price if price else 0
 
     overhang_ratio = net_overhang_adjusted / fcf_3yr_avg if fcf_3yr_avg > 0 else 999
 
-    # Hard filter: overhang/FCF
-    if overhang_ratio > config.LAYER3_MAX_OVERHANG_RATIO:
-        return None
-
-    # ── Market cap check ─────────────────────────────────────
     market_cap = price * shares
 
     # ── Dilution calculator ──────────────────────────────────
     dilution_pct = 0
     diluted_shares = shares
-    if overhang_ratio > 8:
+    if overhang_ratio > 8 and fcf_3yr_avg > 0:
         target_overhang = fcf_3yr_avg * config.DILUTION_TARGET_RATIO
         excess = net_overhang_adjusted - target_overhang
         if excess > 0:
@@ -162,7 +177,7 @@ def _evaluate_ticker(stock: dict) -> dict | None:
     return {
         **stock,
         "market_cap":              round(market_cap),
-        "revenue_ttm":             round(revenue),
+        "revenue_ttm":             round(revenue) if revenue else None,
         "fcf_3yr_avg":             round(fcf_3yr_avg),
         "fcf_per_share":           round(fcf_per_share, 2),
         "fcf_yield":               round(fcf_yield, 4),

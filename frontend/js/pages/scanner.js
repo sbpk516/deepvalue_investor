@@ -69,22 +69,25 @@ function renderFullPage() {
   renderCandidatesList();
 }
 
-// ─── Re-filter Layer 2 stocks client-side with user's parameters ───
+// ─── Re-filter stocks client-side with user's parameters ───
 function refilterPipeline() {
   const pipeline = scannerData.pipeline || {};
+  // Use all_evaluated (stocks with fundamental data) — not just L2 (no data)
+  const allEvaluated = pipeline.layer3_fundamentals?.all_evaluated || [];
+  // Fallback: if all_evaluated not available, use L3 passed stocks
+  const stockPool = allEvaluated.length > 0 ? allEvaluated : (pipeline.layer3_fundamentals?.stocks || []);
   const l2Stocks = pipeline.layer2_price?.stocks || [];
 
-  // Re-apply Layer 3 filters with active params
-  const l3Passed = l2Stocks.filter(s => {
+  // Re-apply filters with active params
+  const l3Passed = stockPool.filter(s => {
     const ptbv = s.price_to_tbv;
     const fcfYield = s.fcf_yield;
     const rev = s.revenue_ttm;
     const oh = s.net_overhang_fcf_ratio;
-    // Must have fundamentals data
-    if (ptbv == null || fcfYield == null) return false;
-    if (ptbv > activeParams.maxPTBV) return false;
+    if (ptbv == null && fcfYield == null) return false;
+    if (ptbv != null && ptbv > activeParams.maxPTBV) return false;
     if (rev != null && rev < activeParams.minRevenue) return false;
-    if (fcfYield <= 0) return false; // positive FCF required
+    if (fcfYield != null && fcfYield <= 0) return false;
     if (oh != null && oh > activeParams.maxOverhang) return false;
     return true;
   });
@@ -290,7 +293,7 @@ function renderLiveFunnel(refiltered) {
   const layers = [
     { label: 'Universe', desc: 'All US-listed stocks (SEC EDGAR)', count: universeCount, color: 'var(--accent)', key: null },
     { label: 'Price Pain', desc: `Down ${activeParams.drawdown}%+ from 3yr high`, count: l2Count, filtered: universeCount - l2Count, color: 'var(--yellow)', key: 'layer2_price' },
-    { label: 'Fundamentals', desc: `P/TBV < ${activeParams.maxPTBV}, +FCF, Rev > $${(activeParams.minRevenue/1e6).toFixed(0)}M, OH < ${activeParams.maxOverhang}x`, count: l3Count, filtered: l2Count - l3Count, color: 'var(--orange)', key: null, stocks: refiltered.l3 },
+    { label: 'Fundamentals', desc: `P/TBV < ${activeParams.maxPTBV}, +FCF, Rev > $${(activeParams.minRevenue/1e6).toFixed(0)}M, OH < ${activeParams.maxOverhang}x`, count: l3Count, filtered: (pipeline.layer3_fundamentals?.evaluated || l2Count) - l3Count, color: 'var(--orange)', key: null, stocks: refiltered.l3 },
     { label: 'Scored', desc: 'Conviction + bonds + technical scoring applied', count: scoredCount, filtered: 0, color: 'var(--exceptional)', key: null, stocks: refiltered.scored },
   ];
 
