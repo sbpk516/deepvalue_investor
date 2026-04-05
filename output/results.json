@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-04-04T12:25:02.815819",
-  "run_date": "2026-04-04",
+  "generated_at": "2026-04-05T04:51:39.486516",
+  "run_date": "2026-04-05",
   "stats": {
     "stocks_screened": 5,
     "layer2_passed": 0,
@@ -54,7 +54,10 @@
       "description": "Fundamentals \u2014 P/TBV < 1.5, positive FCF, revenue > $50M",
       "count": 0,
       "filtered": 0,
-      "stocks": []
+      "evaluated": 0,
+      "no_data": 0,
+      "stocks": [],
+      "all_evaluated": []
     },
     "layer4_conviction": {
       "description": "Conviction \u2014 insider buy >= $200K OR value fund OR 20%+ insider ownership",
