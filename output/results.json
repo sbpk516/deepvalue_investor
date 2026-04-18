@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-04-17T05:01:09.711144",
-  "run_date": "2026-04-17",
+  "generated_at": "2026-04-18T04:48:12.151413",
+  "run_date": "2026-04-18",
   "stats": {
     "stocks_screened": 5,
     "layer2_passed": 0,
@@ -9,7 +9,7 @@
     "layer5_passed": 0,
     "layer6_passed": 0,
     "scored": 0,
-    "runtime_seconds": 3
+    "runtime_seconds": 1
   },
   "parameters": {
     "LAYER2_MIN_DRAWDOWN_PCT": 40.0,
